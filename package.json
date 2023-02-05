@@ -1,0 +1,19 @@
+{
+  "name": "repeater",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "size": 1,
+  "scripts": {
+    "dev": "node index.js official repeater 6969 1 development"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "fs": "^0.0.1-security",
+    "fs-extra": "^11.1.0",
+    "node-mermaid": "*",
+    "path": "^0.12.7",
+    "socket.io-client": "^4.5.4"
+  }
+}
