@@ -97,10 +97,12 @@ AppChannel.on('connect', () => {
                 })
 
                 if (client.flag === 'Read and write') {
-                  clientManager.state[ip][platform].on('input', ({ platform, text }) => {
-                    if (platform && text) {
-                      AppChannel.sendMessage(platform, text)
-                      return
+                  clientManager.state[ip][platform].on('input', data => {
+                    if (data.platform === platform) {
+                      if (data.platform && data.text) {
+                        AppChannel.sendMessage(data.platform, data.text)
+                        return
+                      }
                     }
                   })
                 }
