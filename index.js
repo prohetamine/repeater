@@ -34,7 +34,7 @@ AppChannel.on('connect', () => {
             if (online !== false) {
               const client = clients.readInterval().find(client => client.ip === ip)
 
-              if (client && client.platform === platform || client.platform === 'All platforms') {
+              if (client && (client.platform === platform || client.platform === 'All platforms')) {
                 clientManager.state[ip][platform] = io(
                   `${ip.match(/^(http:\/\/|https:\/\/)/gi) ? '' : 'http://'}${ip}:6767?platform=${platform}`,
                   {
