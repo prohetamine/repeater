@@ -34,7 +34,7 @@ AppChannel.on('connect', () => {
             if (online !== false) {
               const client = clients.readInterval().find(client => client.ip === ip)
 
-              if (client.platform === platform || client.platform === 'All platforms') {
+              if (client && client.platform === platform || client.platform === 'All platforms') {
                 clientManager.state[ip][platform] = io(
                   `${ip.match(/^(http:\/\/|https:\/\/)/gi) ? '' : 'http://'}${ip}:6767?platform=${platform}`,
                   {
@@ -94,6 +94,19 @@ AppChannel.on('connect', () => {
         AppTransportChannel.writeData({
           type: 'get-clients',
           data: await clients.read()
+        })
+
+        Object.keys(clientManager.state).map(ip => {
+          console.log(clientManager.state[ip][platform])
+          /*.on('connect', async () => {
+            AppTransportChannel.writeData({
+              type: 'status-client',
+              data: {
+                id: client.id,
+                isConnect: true
+              }
+            })
+          })*/
         })
       }
 
