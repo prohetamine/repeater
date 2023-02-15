@@ -1,47 +1,15 @@
 const AppChannel            = require('node-mermaid/store/app-channel')()
     , AppTransportChannel   = require('node-mermaid/store/app-transport-channel')()
-    , appMemoryFolderPath   = require('node-mermaid/store/app-memory-folder-path')
+    , AppMemoryFileJSON     = require('node-mermaid/store/app-memory-file-json')
     , { io }                = require('socket.io-client')
     , path                  = require('path')
     , fs                    = require('fs')
     , fse                   = require('fs-extra')
     , clientManager         = require('./client-manager')
 
-const clientsPath = path.join(appMemoryFolderPath, 'clients.json')
+const clients = new AppMemoryFileJSON('clients', [], 10000)
 
-if (!fs.existsSync(clientsPath)) {
-  fs.writeFileSync(
-    clientsPath,
-    JSON.stringify([])
-  )
-}
-
-let clientsLocalMemo = []
-
-const readClients = async () => {
-  let data = []
-
-  try {
-    data = JSON.parse(await fse.readFileSync(clientsPath, 'utf8'))
-  } catch (e) {
-    data = []
-  }
-
-  clientsLocalMemo = data
-  return data
-}
-
-const writeClients = async data => {
-  try {
-    await fse.writeFileSync(clientsPath, JSON.stringify(data))
-    clientsLocalMemo = data
-    return true
-  } catch (e) {
-    return false
-  }
-}
-
-readClients().then(
+clients.read().then(
   clients =>
     clientManager.connect(clients.map(({ ip }) => ip))
 )
@@ -64,7 +32,7 @@ AppChannel.on('connect', () => {
             }
           } else {
             if (online !== false) {
-              const client = clientsLocalMemo.find(client => client.ip === ip)
+              const client = clients.readInterval().find(client => client.ip === ip)
 
               if (client.platform === platform || client.platform === 'All platforms') {
                 clientManager.state[ip][platform] = io(
@@ -125,20 +93,20 @@ AppChannel.on('connect', () => {
       if (type === 'get-clients') {
         AppTransportChannel.writeData({
           type: 'get-clients',
-          data: await readClients()
+          data: await clients.read()
         })
       }
 
       if (type === 'set-clients') {
         try {
-          await writeClients(data)
+          await clients.write(data)
           clientManager.disconnect()
           clientManager.connect(data.map(({ ip }) => ip))
         } catch (e) {}
 
         AppTransportChannel.writeData({
           type: 'get-clients',
-          data: await readClients()
+          data: await clients.read()
         })
       }
     })
