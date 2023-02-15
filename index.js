@@ -96,7 +96,9 @@ AppChannel.on('connect', () => {
           data: await clients.read()
         })
 
-        Object.keys(clientManager.state).forEach(ip =>
+        Object.keys(clientManager.state).forEach(ip => {
+          const client = clients.readInterval().find(client => client.ip === ip)
+
           Object.keys(clientManager.state[ip]).forEach(platform => {
             if (clientManager.state[ip][platform].connected) {
               AppTransportChannel.writeData({
@@ -108,7 +110,7 @@ AppChannel.on('connect', () => {
               })
             }
           })
-        )
+        })
       }
 
       if (type === 'set-clients') {
