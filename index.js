@@ -98,17 +98,16 @@ AppChannel.on('connect', () => {
 
         Object.keys(clientManager.state).forEach(ip =>
           Object.keys(clientManager.state[ip]).forEach(platform => {
-            console.log(clientManager.state[ip][platform])
-          })          
-          /*.on('connect', async () => {
-            AppTransportChannel.writeData({
-              type: 'status-client',
-              data: {
-                id: client.id,
-                isConnect: true
-              }
-            })
-          })*/
+            if (clientManager.state[ip][platform].connected) {
+              AppTransportChannel.writeData({
+                type: 'status-client',
+                data: {
+                  id: client.id,
+                  isConnect: true
+                }
+              })
+            }
+          })
         )
       }
 
