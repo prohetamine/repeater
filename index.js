@@ -14,8 +14,6 @@ clients.read().then(
     clientManager.connect(clients.map(({ ip }) => ip))
 )
 
-let _state = { isPlay: true }
-
 AppChannel.on('connect', () => {
   AppTransportChannel.on('connect', () => {
     AppChannel.on('reload', () => {
@@ -25,7 +23,15 @@ AppChannel.on('connect', () => {
     })
 
     AppChannel.on('state', state => {
-      _state = state
+      if (!state.isPlay) {
+        Object.keys(clientManager.state).forEach(ip =>
+          Object.keys(clientManager.state[ip]).forEach(platform => {
+            if (clientManager.state[ip][platform] && clientManager.state[ip][platform].close) {
+              clientManager.state[ip][platform].close()
+            }
+          })
+        )
+      }
     })
 
     AppChannel.on('status', data => {
@@ -72,7 +78,7 @@ AppChannel.on('connect', () => {
 
                 if (client.flag === 'Read and write') {
                   clientManager.state[ip][platform].on('input', data => {
-                    if (data.platform === platform && _state.isPlay) {
+                    if (data.platform === platform) {
                       if (data.platform && data.text) {
                         AppChannel.sendMessage(data.platform, data.text)
                         return
