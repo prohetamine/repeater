@@ -24,7 +24,7 @@ AppChannel.on('connect', () => {
       })
     })
 
-    AppChannel.state(state => {
+    AppChannel.on('state', state => {
       _state = state
     })
 
