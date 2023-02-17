@@ -28,6 +28,7 @@ AppChannel.on('connect', () => {
           Object.keys(clientManager.state[ip]).forEach(platform => {
             if (clientManager.state[ip][platform] && clientManager.state[ip][platform].close) {
               clientManager.state[ip][platform].close()
+              clientManager.state[ip][platform] = null
             }
           })
         )
