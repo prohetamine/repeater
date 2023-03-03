@@ -21,29 +21,33 @@
     </div>
   </div>
   <script>
-    const AppTransportChannel = MermaidAppTransportChannel()
+    const init = () => {
+      const AppTransportChannel = MermaidAppTransportChannel()
 
-    const constructorNode = document.querySelector('#constructor')
+      const constructorNode = document.querySelector('#constructor')
 
-    AppTransportChannel.on('connect', () => {
-      AppTransportChannel.on('readData', async ({ type, data }) => {
-        if (type === 'reload') {
-          localStorage.clear()
-          window.location.reload()
-        }
-      })
+      AppTransportChannel.on('connect', () => {
+        AppTransportChannel.on('readData', async ({ type, data }) => {
+          if (type === 'reload') {
+            localStorage.clear()
+            window.location.reload()
+          }
+        })
 
-      constructorNode.addEventListener('click', () => {
-        AppTransportChannel.openWindow({
-          file: 'settings/build/index.html',
-          width: 950,
-          minWidth: 950,
-          maxWidth: 950,
-          height: 700,
-          alwaysOnTop: true
+        constructorNode.addEventListener('click', () => {
+          AppTransportChannel.openWindow({
+            file: 'settings/build/index.html',
+            width: 950,
+            minWidth: 950,
+            maxWidth: 950,
+            height: 700,
+            alwaysOnTop: true
+          })
         })
       })
-    })
+    }
+
+    window.addEventListener('load', init)
   </script>
 </body>
 </html>
